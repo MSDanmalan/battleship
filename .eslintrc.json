@@ -16,6 +16,7 @@
         "quotes": [
             "error",
             "single"
-        ]
+        ],
+        "no-restricted-syntax": "off"
     }
 }
