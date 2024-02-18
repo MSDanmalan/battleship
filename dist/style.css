@@ -1,0 +1,69 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    display: flex;
+    justify-content: center;
+    background-color: #000000;
+    color: #fff;
+    /* border: 2px solid black; */
+}
+
+main {
+    /* border: 2px solid red; */
+    background: linear-gradient(to top left, #33ccff 0%, #000033 100%);
+    flex: 1;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    margin-top: 5em;
+    gap: 5em;
+    /* border: 2px solid green; */
+}
+
+.board {
+    display: grid;
+    width: 300px;
+    height: 300px;
+    border: 1px solid gray;
+}
+
+.cell {
+    border: 1px solid gray;
+}
+
+.nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 2em;
+}
+
+button {
+    padding: 5px 5px; 
+    width: 200px;
+    border: 1px solid blue;
+    border-radius: 5px;
+    font-size: large;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    background: linear-gradient(to bottom right, #000000 70%, #c8c8c8 100%);
+    color: white;
+}
+
+.ship {
+    background-color: #000000a1;
+}
+
+.attacked-ship {
+    background-color: red;
+}
+
+.missed-attack {
+    background-color: aqua;
+}
