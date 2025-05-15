@@ -78,10 +78,10 @@ class Gameboard {
         }
 
         const target = this.board.find((node) => node.x === x && node.y === y);
-        console.log(target);
         if (target.ship !== null) {
             target.ship.hit();
             target.ship.isSunk();
+            console.log(target.ship);
         } else {
             this.missedAttacks.add(target);
         }
