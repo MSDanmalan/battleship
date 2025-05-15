@@ -1,4 +1,12 @@
-import { playerBoard, computerBoard } from './game';
+import { computerPlay } from './player';
+import {
+    playerBoard,
+    computerBoard,
+    playerShips,
+    computerShips,
+    player1,
+    computerAI,
+} from './game';
 
 function makeBoard(name) {
     const board = document.createElement('div');
@@ -19,17 +27,10 @@ function makeBoard(name) {
     }
     return board;
 }
-
 const playerBoardUI = makeBoard('player');
 const computerBoardUI = makeBoard('computer');
 
-const getPlayerShips = (gameboard) =>
-    gameboard.board.filter((square) => square.ship !== null);
-
-const playerShips = getPlayerShips(playerBoard);
-const computerShips = getPlayerShips(computerBoard);
-let cells; // Declare cells in a broader scope
-
+let cells;
 const getCells = (boardID) =>
     new Promise((resolve) => {
         document.addEventListener('DOMContentLoaded', () => {
@@ -50,19 +51,27 @@ async function renderBoards(player, boardID) {
         shipPosition.classList.add('ship');
     }
 }
-
 renderBoards(playerShips, 'player-board');
 renderBoards(computerShips, 'computer-board');
 
-async function displayAttack(board, boardID) {
+async function playUserInput(player, enemyBoard, boardID) {
+    cells = await getCells(boardID);
+    cells.forEach((cell) =>
+        cell.addEventListener('click', () => {
+            const x = Number(cell.dataset.coordinate.charAt(0));
+            const y = Number(cell.dataset.coordinate.charAt(3));
+            player.play(x, y, enemyBoard);
+        })
+    );
+}
+
+playUserInput(player1, computerBoard, 'computer-board');
+
+async function displayAttack(boardID) {
     cells = await getCells(boardID);
 
     cells.forEach((cell) => {
         cell.addEventListener('click', () => {
-            const x = Number(cell.dataset.coordinate.charAt(0));
-            const y = Number(cell.dataset.coordinate.charAt(3));
-            board.receiveAttack(x, y);
-
             if (cell.classList.contains('ship')) {
                 cell.classList.add('attacked-ship');
             } else {
@@ -71,8 +80,12 @@ async function displayAttack(board, boardID) {
         });
     });
 }
+displayAttack('computer-board');
 
-displayAttack(playerBoard, 'player-board');
-displayAttack(computerBoard, 'computer-board');
+const gameStartButton = document.getElementById('start-game');
+gameStartButton.addEventListener('click', () => {
+    computerPlay(computerAI, playerBoard);
+    // displayAttack('player-board');
+});
 
-export { playerBoardUI, computerBoardUI };
+export { playerBoardUI, computerBoardUI, playUserInput };
