@@ -9,11 +9,6 @@ class Player {
     }
 }
 
-const createComputerAI = () => {
-    const computer = new Player();
-    return computer;
-};
-
 const getComputerTarget = () => {
     let target = [];
 
@@ -31,6 +26,7 @@ const getComputerTarget = () => {
 const shots = new Set();
 
 const computerPlay = (AI, board) => {
+    console.log('hi');
     const computerTarget = getComputerTarget();
     let x = 0;
     let y = 0;
@@ -45,4 +41,4 @@ const computerPlay = (AI, board) => {
 };
 
 export default Player;
-export { createComputerAI, computerPlay };
+export { computerPlay };
