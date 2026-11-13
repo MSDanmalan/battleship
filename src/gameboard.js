@@ -8,6 +8,8 @@ function CreateNode(x, y) {
 class Gameboard {
     constructor() {
         this.board = this.createBoard();
+        this.missedAttacks = new Set();
+        this.attackedSquares = new Set();
     }
 
     createBoard() {
@@ -96,25 +98,50 @@ class Gameboard {
         return this.board;
     }
 
-    missedAttacks = new Set();
-
     receiveAttack(x, y) {
-        const isValidCoordinate = (a, b) =>
-            a >= 0 && a <= 9 && b >= 0 && b <= 9;
+        // Validate coordinates
+        const isValidCoordinate = (value) =>
+            Number.isInteger(value) && value >= 0 && value <= 9;
 
-        if (!isValidCoordinate(x, y)) {
-            return 'Please select coordinates between 0 and 9';
+        if (!isValidCoordinate(x) || !isValidCoordinate(y)) {
+            return {
+                status: 'invalid-coordinate',
+                square: null,
+            };
+        }
+
+        // Use coordinate values rather than object references
+        const coordinateKey = `${x},${y}`;
+
+        // Prevent repeated attacks
+        if (this.attackedSquares.has(coordinateKey)) {
+            return {
+                status: 'already-attacked',
+                square: this.board.find((node) => node.x === x && node.y === y),
+            };
         }
 
         const target = this.board.find((node) => node.x === x && node.y === y);
+
+        // Record the attack
+        this.attackedSquares.add(coordinateKey);
+
         if (target.ship !== null) {
             target.ship.hit();
             target.ship.isSunk();
-        } else {
-            this.missedAttacks.add(target);
+
+            return {
+                status: 'hit',
+                square: target,
+            };
         }
 
-        return target;
+        this.missedAttacks.add(target);
+
+        return {
+            status: 'miss',
+            square: target,
+        };
     }
 }
 

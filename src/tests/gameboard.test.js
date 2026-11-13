@@ -73,14 +73,70 @@ describe('gameboard attacks', () => {
     });
 
     test('records an attack on a ship', () => {
-        const attackedSquare = gameboard.receiveAttack(0, 1);
+        const result = gameboard.receiveAttack(0, 1);
 
-        expect(attackedSquare.ship.hits).toBe(1);
+        expect(result.status).toBe('hit');
+        expect(result.square.ship.hits).toBe(1);
     });
 
     test('tracks missed attacks', () => {
-        const missedSquare = gameboard.receiveAttack(3, 3);
+        const result = gameboard.receiveAttack(3, 3);
 
-        expect(gameboard.missedAttacks).toContain(missedSquare);
+        expect(result.status).toBe('miss');
+        expect(gameboard.missedAttacks).toContain(result.square);
+    });
+
+    test('does not count a repeated hit twice', () => {
+        const firstAttack = gameboard.receiveAttack(0, 1);
+        const secondAttack = gameboard.receiveAttack(0, 1);
+
+        expect(firstAttack.status).toBe('hit');
+        expect(secondAttack.status).toBe('already-attacked');
+        expect(
+            gameboard.board.find((node) => node.x === 0 && node.y === 1).ship
+                .hits
+        ).toBe(1);
+    });
+
+    test('does not register a repeated miss twice', () => {
+        const firstAttack = gameboard.receiveAttack(3, 3);
+        const secondAttack = gameboard.receiveAttack(3, 3);
+
+        expect(firstAttack.status).toBe('miss');
+        expect(secondAttack.status).toBe('already-attacked');
+        expect(gameboard.missedAttacks.size).toBe(1);
+    });
+
+    test('rejects negative coordinates', () => {
+        expect(gameboard.receiveAttack(-1, 3).status).toBe(
+            'invalid-coordinate'
+        );
+    });
+
+    test('rejects coordinates outside the board', () => {
+        expect(gameboard.receiveAttack(10, 3).status).toBe(
+            'invalid-coordinate'
+        );
+    });
+
+    test('rejects decimal coordinates', () => {
+        expect(gameboard.receiveAttack(1.5, 3).status).toBe(
+            'invalid-coordinate'
+        );
+    });
+
+    test('rejects non-numeric coordinates', () => {
+        expect(gameboard.receiveAttack('a', 3).status).toBe(
+            'invalid-coordinate'
+        );
+    });
+
+    test('marks a ship as sunk after all its squares are hit', () => {
+        gameboard.receiveAttack(0, 0);
+        gameboard.receiveAttack(0, 1);
+        const finalAttack = gameboard.receiveAttack(0, 2);
+
+        expect(finalAttack.status).toBe('hit');
+        expect(finalAttack.square.ship.sunk).toBe(true);
     });
 });
