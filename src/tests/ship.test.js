@@ -18,6 +18,11 @@ describe('hits', () => {
         calculateHits(submarine, 4);
         expect(submarine.hits).toBe(3);
     });
+
+    test('starts with zero hits', () => {
+        const carrier = new Ship(5);
+        expect(carrier.hits).toBe(0);
+    });
 });
 
 describe('sunk', () => {
