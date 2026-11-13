@@ -1,25 +1,86 @@
 import Gameboard from '../gameboard';
 
-describe('gameboard', () => {
-    const gameboard = new Gameboard();
-    const xCoordinate = gameboard.placeShip(3, [0, 0], [0, 2]);
-    const yCoordinate = gameboard.placeShip(3, [1, 1], [3, 1]);
+describe('gameboard ship placement', () => {
+    let gameboard;
 
-    test('place ship at x coordinate', () => {
-        expect(xCoordinate[0].ship).not.toBe(null);
+    beforeEach(() => {
+        gameboard = new Gameboard();
     });
 
-    test('place ship at y coordinate', () => {
-        expect(yCoordinate[0].ship).not.toBe(null);
+    const getSquare = (x, y) =>
+        gameboard.board.find((node) => node.x === x && node.y === y);
+
+    test('places a ship horizontally', () => {
+        gameboard.placeShip(3, [0, 0], [0, 2]);
+
+        expect(getSquare(0, 0).ship).not.toBe(null);
+        expect(getSquare(0, 1).ship).not.toBe(null);
+        expect(getSquare(0, 2).ship).not.toBe(null);
     });
 
-    test('check attacks', () => {
-        const attackedShip = gameboard.receiveAttack(0, 1);
-        expect(attackedShip.ship.hits).toBe(1);
+    test('places a ship vertically', () => {
+        gameboard.placeShip(3, [1, 1], [3, 1]);
+
+        expect(getSquare(1, 1).ship).not.toBe(null);
+        expect(getSquare(2, 1).ship).not.toBe(null);
+        expect(getSquare(3, 1).ship).not.toBe(null);
     });
 
-    test('track missed attacks', () => {
-        const missedShip = gameboard.receiveAttack(3, 3);
-        expect(gameboard.missedAttacks).toContain(missedShip);
+    test('does not allow ships to overlap', () => {
+        gameboard.placeShip(3, [0, 0], [0, 2]);
+
+        expect(() => {
+            gameboard.placeShip(3, [0, 1], [2, 1]);
+        }).toThrow();
+    });
+
+    test('rejects placements outside the board', () => {
+        expect(() => {
+            gameboard.placeShip(3, [9, 9], [9, 11]);
+        }).toThrow();
+    });
+
+    test('rejects placements where ship length does not match coordinates', () => {
+        expect(() => {
+            gameboard.placeShip(3, [0, 0], [0, 1]);
+        }).toThrow();
+    });
+
+    test('rejects diagonal placements', () => {
+        expect(() => {
+            gameboard.placeShip(3, [0, 0], [2, 2]);
+        }).toThrow();
+    });
+
+    test('does not partially place a ship when placement fails', () => {
+        gameboard.placeShip(3, [0, 0], [0, 2]);
+
+        expect(() => {
+            gameboard.placeShip(3, [0, 1], [2, 1]);
+        }).toThrow();
+
+        expect(getSquare(1, 1).ship).toBe(null);
+        expect(getSquare(2, 1).ship).toBe(null);
+    });
+});
+
+describe('gameboard attacks', () => {
+    let gameboard;
+
+    beforeEach(() => {
+        gameboard = new Gameboard();
+        gameboard.placeShip(3, [0, 0], [0, 2]);
+    });
+
+    test('records an attack on a ship', () => {
+        const attackedSquare = gameboard.receiveAttack(0, 1);
+
+        expect(attackedSquare.ship.hits).toBe(1);
+    });
+
+    test('tracks missed attacks', () => {
+        const missedSquare = gameboard.receiveAttack(3, 3);
+
+        expect(gameboard.missedAttacks).toContain(missedSquare);
     });
 });

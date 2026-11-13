@@ -24,45 +24,74 @@ class Gameboard {
         return board;
     }
 
-    placeShip(ship, start = [], end = []) {
-        const shipType = new Ship(ship);
-        const coordinate = [];
-        const xStart = start[0];
-        const yStart = start[1];
-        let xEnd = end[0];
-        let yEnd = end[1];
-
-        if (start === end) coordinate.push(start);
-
-        if (xStart === xEnd) {
-            coordinate.push(end);
-            for (let i = 0; i < shipType.length - 1; i++) {
-                if (yStart < yEnd) {
-                    coordinate.push([xStart, (yEnd -= 1)]);
-                } else if (yStart > yEnd) {
-                    coordinate.push([xStart, (yEnd += 1)]);
-                }
-            }
-        } else if (yStart === yEnd) {
-            coordinate.push(end);
-            for (let i = 0; i < shipType.length - 1; i++) {
-                if (xStart < xEnd) {
-                    coordinate.push([(xEnd -= 1), yStart]);
-                } else if (xStart > xEnd) {
-                    coordinate.push([(xEnd += 1), yStart]);
-                }
-            }
+    placeShip(shipLength, start = [], end = []) {
+        // Validate ship length
+        if (!Number.isInteger(shipLength) || shipLength < 1) {
+            throw new Error('Ship length must be a positive integer');
         }
 
-        for (const square of coordinate) {
-            const position = this.board.find(
-                (node) => node.x === square[0] && node.y === square[1]
+        // Validate coordinate format
+        const isValidCoordinate = (coordinate) =>
+            Array.isArray(coordinate) &&
+            coordinate.length === 2 &&
+            coordinate.every(
+                (value) => Number.isInteger(value) && value >= 0 && value <= 9
             );
 
-            if (position.ship === null) {
-                position.ship = shipType;
-            }
+        if (!isValidCoordinate(start) || !isValidCoordinate(end)) {
+            throw new Error('Coordinates must be valid board positions');
         }
+
+        const [xStart, yStart] = start;
+        const [xEnd, yEnd] = end;
+
+        // Determine orientation
+        const isHorizontal = xStart === xEnd;
+        const isVertical = yStart === yEnd;
+
+        if (!isHorizontal && !isVertical) {
+            throw new Error('Ships must be placed horizontally or vertically');
+        }
+
+        // Calculate ship length from its endpoints
+        const actualLength =
+            Math.abs(xEnd - xStart) + Math.abs(yEnd - yStart) + 1;
+
+        if (actualLength !== shipLength) {
+            throw new Error(
+                'Ship length does not match the selected coordinates'
+            );
+        }
+
+        // Calculate all occupied coordinates
+        const coordinates = [];
+
+        const stepX = Math.sign(xEnd - xStart);
+        const stepY = Math.sign(yEnd - yStart);
+
+        for (let i = 0; i < shipLength; i += 1) {
+            coordinates.push([xStart + i * stepX, yStart + i * stepY]);
+        }
+
+        // Validate every position before changing the board
+        const positions = coordinates.map(([x, y]) =>
+            this.board.find((node) => node.x === x && node.y === y)
+        );
+
+        if (positions.some((position) => !position)) {
+            throw new Error('Ship placement is outside the board');
+        }
+
+        if (positions.some((position) => position.ship !== null)) {
+            throw new Error('Ships cannot overlap');
+        }
+
+        // Place the ship only after all validations pass
+        const newShip = new Ship(shipLength);
+
+        positions.forEach((position) => {
+            position.ship = newShip;
+        });
 
         return this.board;
     }
@@ -81,7 +110,6 @@ class Gameboard {
         if (target.ship !== null) {
             target.ship.hit();
             target.ship.isSunk();
-            console.log(target.ship);
         } else {
             this.missedAttacks.add(target);
         }
