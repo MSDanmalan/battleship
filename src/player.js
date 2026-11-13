@@ -4,8 +4,13 @@ class Player {
     }
 
     play(x, y, gameBoard) {
-        gameBoard.receiveAttack(x, y);
-        this.played = true;
+        const result = gameBoard.receiveAttack(x, y);
+
+        if (result.status === 'hit' || result.status === 'miss') {
+            this.played = true;
+        }
+
+        return result;
     }
 }
 

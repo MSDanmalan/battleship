@@ -1,20 +1,44 @@
-/* eslint-disable no-undef */
-import Player, { createComputerAI, computerPlay } from '../player';
+import Player from '../player';
 import Gameboard from '../gameboard';
 
-const gameboard = new Gameboard();
-const computerBoard = new Gameboard();
-const player1 = new Player();
-const computerAI = createComputerAI();
+describe('Player', () => {
+    let player;
+    let gameboard;
 
-describe('players take turns', () => {
-    test('first player turn', () => {
-        player1.play(2, 3, computerBoard);
-        expect(player1.played).toBeTruthy();
+    beforeEach(() => {
+        player = new Player();
+        gameboard = new Gameboard();
+        gameboard.placeShip(2, [0, 0], [0, 1]);
     });
 
-    test("computer's turn", () => {
-        computerPlay(computerAI, gameboard);
-        expect(computerAI.played).toBeTruthy();
+    test('returns the result of a successful hit', () => {
+        const result = player.play(0, 0, gameboard);
+
+        expect(result.status).toBe('hit');
+        expect(player.played).toBe(true);
+    });
+
+    test('returns the result of a successful miss', () => {
+        const result = player.play(3, 3, gameboard);
+
+        expect(result.status).toBe('miss');
+        expect(player.played).toBe(true);
+    });
+
+    test('does not mark an invalid attack as played', () => {
+        const result = player.play(-1, 3, gameboard);
+
+        expect(result.status).toBe('invalid-coordinate');
+        expect(player.played).toBe(null);
+    });
+
+    test('does not mark a repeated attack as played', () => {
+        player.play(0, 0, gameboard);
+        player.played = null;
+
+        const result = player.play(0, 0, gameboard);
+
+        expect(result.status).toBe('already-attacked');
+        expect(player.played).toBe(null);
     });
 });
