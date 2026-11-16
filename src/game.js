@@ -1,6 +1,5 @@
 import Player from './player';
 import Gameboard from './gameboard';
-import { playUserInput } from './dom';
 
 const playerBoard = new Gameboard();
 const computerBoard = new Gameboard();
