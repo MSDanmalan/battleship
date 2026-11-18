@@ -1,35 +1,65 @@
 import Ship from '../ship';
 
 const calculateHits = (ship, numberOfHits) => {
-    for (let i = 0; i < numberOfHits; i++) {
+    for (let i = 0; i < numberOfHits; i += 1) {
         ship.hit();
     }
 };
 
-describe('hits', () => {
-    test('increases number of hits', () => {
-        const destroyer = new Ship(3);
-        calculateHits(destroyer, 5);
-        expect(destroyer.hits).toBe(3);
-    });
-
-    test('hits does not exceeds ship length', () => {
-        const submarine = new Ship(3);
-        calculateHits(submarine, 4);
-        expect(submarine.hits).toBe(3);
-    });
-
+describe('Ship hits', () => {
     test('starts with zero hits', () => {
-        const carrier = new Ship(5);
-        expect(carrier.hits).toBe(0);
+        const ship = new Ship(3);
+
+        expect(ship.hits).toBe(0);
+    });
+
+    test('increments hits when hit', () => {
+        const ship = new Ship(3);
+
+        ship.hit();
+
+        expect(ship.hits).toBe(1);
+    });
+
+    test('does not exceed the ship length', () => {
+        const ship = new Ship(3);
+
+        calculateHits(ship, 5);
+
+        expect(ship.hits).toBe(3);
     });
 });
 
-describe('sunk', () => {
-    test('consider ship as sunked', () => {
-        const patrolBoat = new Ship(2);
-        calculateHits(patrolBoat, 4);
-        patrolBoat.isSunk();
-        expect(patrolBoat.sunk).toBeTruthy();
+describe('Ship sinking', () => {
+    test('starts unsunk', () => {
+        const ship = new Ship(2);
+
+        expect(ship.sunk).toBe(false);
+    });
+
+    test('remains unsunk before reaching its hit limit', () => {
+        const ship = new Ship(2);
+
+        ship.hit();
+        expect(ship.isSunk()).toBe(false);
+    });
+
+    test('becomes sunk when all segments are hit', () => {
+        const ship = new Ship(2);
+
+        calculateHits(ship, 2);
+
+        expect(ship.isSunk()).toBe(true);
+        expect(ship.sunk).toBe(true);
+    });
+
+    test('remains sunk after subsequent checks', () => {
+        const ship = new Ship(2);
+
+        calculateHits(ship, 2);
+
+        ship.isSunk();
+
+        expect(ship.isSunk()).toBe(true);
     });
 });

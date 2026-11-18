@@ -1,5 +1,6 @@
 import Player from './player';
 import Gameboard from './gameboard';
+import GameController from './gameController';
 
 const playerBoard = new Gameboard();
 const computerBoard = new Gameboard();
@@ -18,21 +19,23 @@ computerBoard.placeShip(3, [2, 9], [0, 9]);
 computerBoard.placeShip(3, [7, 2], [5, 2]);
 computerBoard.placeShip(2, [8, 7], [8, 6]);
 
-const getPlayerShips = (gameboard) =>
+const gameController = new GameController(
+    player1,
+    computerAI,
+    playerBoard,
+    computerBoard
+);
+
+const getPlayerShipPositions = (gameboard) =>
     gameboard.board.filter((square) => square.ship !== null);
 
-const playerShips = getPlayerShips(playerBoard);
-const computerShips = getPlayerShips(computerBoard);
-
-function isGameOver(allShips) {
-    return allShips.every((coordinate) => coordinate.ship.sunk === true);
-}
+const playerShipPositions = getPlayerShipPositions(playerBoard);
 
 export {
     playerBoard,
     computerBoard,
-    playerShips,
-    computerShips,
+    playerShipPositions,
     player1,
     computerAI,
+    gameController,
 };

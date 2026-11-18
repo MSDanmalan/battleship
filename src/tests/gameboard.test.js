@@ -132,11 +132,75 @@ describe('gameboard attacks', () => {
     });
 
     test('marks a ship as sunk after all its squares are hit', () => {
-        gameboard.receiveAttack(0, 0);
+        const firstAttack = gameboard.receiveAttack(0, 0);
         gameboard.receiveAttack(0, 1);
         const finalAttack = gameboard.receiveAttack(0, 2);
 
+        expect(firstAttack.sunk).toBe(false);
         expect(finalAttack.status).toBe('hit');
+        expect(finalAttack.sunk).toBe(true);
         expect(finalAttack.square.ship.sunk).toBe(true);
+    });
+});
+
+describe('Ship tracking', () => {
+    let gameboard;
+
+    beforeEach(() => {
+        gameboard = new Gameboard();
+    });
+
+    test('initializes an empty ships collection', () => {
+        expect(gameboard.ships).toEqual([]);
+    });
+
+    test('tracks each successfully placed ship once', () => {
+        gameboard.placeShip(3, [0, 0], [0, 2]);
+        gameboard.placeShip(2, [2, 0], [2, 1]);
+
+        expect(gameboard.ships).toHaveLength(2);
+    });
+
+    test('tracks the actual ship objects placed on the board', () => {
+        gameboard.placeShip(3, [0, 0], [0, 2]);
+
+        const placedShip = gameboard.board.find(
+            (square) => square.ship !== null
+        ).ship;
+
+        expect(gameboard.ships).toContain(placedShip);
+    });
+
+    test('does not track an invalid ship placement', () => {
+        expect(() => {
+            gameboard.placeShip(3, [0, 0], [0, 1]);
+        }).toThrow();
+
+        expect(gameboard.ships).toHaveLength(0);
+    });
+
+    test('tracks ships as they become sunk', () => {
+        gameboard.placeShip(2, [0, 0], [0, 1]);
+
+        expect(gameboard.ships[0].sunk).toBe(false);
+
+        gameboard.receiveAttack(0, 0);
+        expect(gameboard.ships[0].sunk).toBe(false);
+
+        gameboard.receiveAttack(0, 1);
+        expect(gameboard.ships[0].sunk).toBe(true);
+    });
+
+    test('identifies when every ship in the fleet is sunk', () => {
+        gameboard.placeShip(2, [0, 0], [0, 1]);
+        gameboard.placeShip(1, [2, 0], [2, 0]);
+
+        gameboard.receiveAttack(0, 0);
+        gameboard.receiveAttack(0, 1);
+        gameboard.receiveAttack(2, 0);
+
+        const allShipsSunk = gameboard.ships.every((ship) => ship.sunk);
+
+        expect(allShipsSunk).toBe(true);
     });
 });

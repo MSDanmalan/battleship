@@ -1,8 +1,7 @@
 import Ship from './ship';
 
-function CreateNode(x, y) {
-    const ship = null;
-    return { x, y, ship };
+function createNode(x, y) {
+    return { x, y, ship: null };
 }
 
 class Gameboard {
@@ -10,16 +9,15 @@ class Gameboard {
         this.board = this.createBoard();
         this.missedAttacks = new Set();
         this.attackedSquares = new Set();
+        this.ships = [];
     }
 
     createBoard() {
-        const x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-        const y = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
         const board = [];
-        for (const i of x) {
-            for (const j of y) {
-                const coordinates = CreateNode(i, j);
-                board.push(coordinates);
+
+        for (let x = 0; x < 10; x += 1) {
+            for (let y = 0; y < 10; y += 1) {
+                board.push(createNode(x, y));
             }
         }
 
@@ -95,6 +93,8 @@ class Gameboard {
             position.ship = newShip;
         });
 
+        this.ships.push(newShip);
+
         return this.board;
     }
 
@@ -128,11 +128,12 @@ class Gameboard {
 
         if (target.ship !== null) {
             target.ship.hit();
-            target.ship.isSunk();
+            const sunk = target.ship.isSunk();
 
             return {
                 status: 'hit',
                 square: target,
+                sunk,
             };
         }
 
