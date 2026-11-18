@@ -2,6 +2,8 @@
 
 A browser-based implementation of the classic Battleship game, built with JavaScript as part of [The Odin Project](https://www.theodinproject.com/) curriculum.
 
+**[Play the live game](https://msdanmalan.github.io/battleship/)**
+
 The project focuses on modular JavaScript, Test-Driven Development (TDD), object-oriented programming, and separation of application logic from DOM manipulation.
 
 ## Features
