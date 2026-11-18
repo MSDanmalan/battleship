@@ -1,4 +1,12 @@
-import { playerBoardUI, computerBoardUI } from './dom';
+import './style.css';
+import {
+    playerBoardPanel,
+    computerBoardPanel,
+    initializeGameUI,
+} from './dom';
 
 const container = document.querySelector('.container');
-container.append(playerBoardUI, computerBoardUI);
+
+container.append(playerBoardPanel, computerBoardPanel);
+
+initializeGameUI();
