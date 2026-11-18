@@ -1,0 +1,159 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    display: flex;
+    justify-content: center;
+    background-color: #000000;
+    color: #fff;
+}
+
+main {
+    background: linear-gradient(to top left, #33ccff 0%, #000033 100%);
+    flex: 1;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    margin-top: 5em;
+    gap: 5em;
+}
+
+.board-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.board-panel h2 {
+    color: #fff;
+    margin: 0 0 0.75rem;
+}
+
+#computer-board-instructions {
+    color: #fff;
+    text-align: center;
+    margin: 0 1rem;
+}
+
+.board {
+    display: grid;
+    grid-template-rows: repeat(10, 1fr);
+    width: 300px;
+    height: 300px;
+    border: 1px solid gray;
+}
+
+.board-row {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+}
+
+.cell {
+    border: 1px solid gray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: 0;
+}
+
+.cell:focus-visible {
+    position: relative;
+    z-index: 1;
+    outline: 3px solid #ffdf00;
+    outline-offset: -3px;
+}
+
+.cell-marker {
+    display: none;
+    color: #111;
+    font-size: clamp(0.65rem, 2vw, 1.2rem);
+    font-weight: bold;
+    line-height: 1;
+}
+
+.attacked-ship .cell-marker,
+.missed-attack .cell-marker,
+.sunk-ship .cell-marker {
+    display: inline;
+}
+
+.attacked-ship .cell-marker::before {
+    content: '×';
+}
+
+.sunk-ship {
+    background-color: #702082;
+}
+
+.sunk-ship .cell-marker {
+    color: #fff;
+}
+
+.sunk-ship .cell-marker::before {
+    content: '■';
+}
+
+.missed-attack .cell-marker::before {
+    content: '•';
+}
+
+.nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 2em;
+}
+
+button {
+    padding: 5px 5px; 
+    width: 200px;
+    border: 1px solid blue;
+    border-radius: 5px;
+    font-size: large;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    background: linear-gradient(to bottom right, #000000 70%, #c8c8c8 100%);
+    color: white;
+}
+
+.ship {
+    background-color: #000000a1;
+}
+
+.attacked-ship {
+    background-color: red;
+}
+
+.missed-attack {
+    background-color: aqua;
+}
+
+#game-status {
+    color: #ffffff;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: bold;
+    min-height: 1.5em;
+    margin: 1em 0;
+    padding: 0.5em;
+}
+
+@media (max-width: 700px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+        gap: 2em;
+        margin-top: 2em;
+    }
+
+    .board {
+        width: min(300px, 85vw);
+        height: min(300px, 85vw);
+    }
+}
